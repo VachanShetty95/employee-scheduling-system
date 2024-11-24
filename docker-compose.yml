@@ -1,0 +1,46 @@
+networks:
+  ess-network:
+    name: ess-network
+    driver: bridge
+    
+services:
+  db:
+    image: mysql:8.0.36-bullseye
+    container_name: db-local
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ess_db
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ess-network
+    volumes:
+      - ./data/db:/var/lib/mysql
+
+  app:
+    container_name: ess
+    depends_on:
+      db:
+        condition: service_healthy
+    build:
+      context: ./backend/
+      dockerfile: DockerFile
+    ports:
+      - "8080:8080"
+    networks:
+      - ess-network
+    volumes:
+      - ./backend:/app/backend
+    env_file:
+      - ./backend/.env
+    environment:
+      - WATCHFILES_FORCE_POLLING=true
+    restart: unless-stopped

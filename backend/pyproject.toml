@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "employee-scheduling-system"
+version = "0.1.0"
+description = "Employee Scheduling System"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.115.5"
+sqlmodel = "^0.0.22"
+celery = {extras = ["redis"], version = "^5.4.0"}
+uvicorn = "^0.32.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

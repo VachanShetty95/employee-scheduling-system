@@ -102,6 +102,7 @@ class ShiftDetailResponse(ShiftDetailBase):
     id: int
     manager_id: int
     location_id: int
+    employee_id: int
 
 
 # Production Line Models

@@ -142,12 +142,14 @@ def prepopulate_data(session: Session):
         ProductionLineCreate(
             assignment_name="Line A - Assembly",
             no_of_employees_needed=5,
+            no_of_employees_attended=5,
             manager_id=1,
             location_id=1,
         ),
         ProductionLineCreate(
             assignment_name="Line B - Packaging",
             no_of_employees_needed=3,
+            no_of_employees_attended=2,
             manager_id=2,
             location_id=2,
         ),

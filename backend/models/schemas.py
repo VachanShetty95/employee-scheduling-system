@@ -1,7 +1,7 @@
 from datetime import date, datetime, time
 from typing import List, Literal, Optional
 
-from pydantic import EmailStr, Field, field_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from sqlmodel import SQLModel
 
 
@@ -145,6 +145,7 @@ class AvailabilityBase(SQLModel):
     day_of_week: Literal[
         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
     ]
+    date_of_week: date
     start_time: time
     end_time: time
 
@@ -219,9 +220,21 @@ class ManagerResponse(ManagerBase):
 class SchedulingAssignment(SQLModel):
     employee_id: int
     shift_id: int
+    shift_date: datetime
+    shift_desc: str
+    shift_start_time: time
+    shift_end_time: time
     shift_date: date
     assigned: bool  # Whether the employee was successfully assigned
 
 
 class SchedulingResponse(SQLModel):
     assignments: List[SchedulingAssignment]
+
+
+# Webhook Response Model
+class Subscription(BaseModel):
+    id: str
+    name: str
+    reason: str
+    date: datetime

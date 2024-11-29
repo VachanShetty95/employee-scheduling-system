@@ -48,6 +48,9 @@ def shift_schedule(*, employees, shifts, availability):
                             "employee_id": employee.id,
                             "shift_id": shift.id,
                             "shift_date": shift.shift_date,
+                            "shift_desc": shift.shift_desc,
+                            "shift_start_time": shift.shift_start_time,
+                            "shift_end_time": shift.shift_end_time,
                             "assigned": True,
                         }
                     )

@@ -152,24 +152,28 @@ def prepopulate_data(session: Session):
     availability_data = [
         AvailabilityCreate(
             day_of_week="Friday",
+            date_of_week= datetime(2024,11,29),
             start_time=time(6, 0),
             end_time=time(14, 0),
             employee_id=1,  # John Doe
         ),
         AvailabilityCreate(
             day_of_week="Tuesday",
+            date_of_week= datetime(2024,12,3),
             start_time=time(16, 0),
             end_time=time(0, 0),
             employee_id=1,  # John Doe
         ),
         AvailabilityCreate(
             day_of_week="Saturday",
+            date_of_week= datetime(2024,11,30),
             start_time=time(14, 0),
             end_time=time(22, 0),
             employee_id=2,  # Jane Smith
         ),
         AvailabilityCreate(
-            day_of_week="Tuesday",
+            day_of_week="Wednesday",
+            date_of_week= datetime(2024,12,4),
             start_time=time(16, 0),
             end_time=time(0, 0),
             employee_id=2,  # Jane Smith

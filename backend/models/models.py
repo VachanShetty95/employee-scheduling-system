@@ -142,6 +142,7 @@ class Availability(SQLModel, table=True):
     __tablename__ = "availability"
     id: Optional[int] = Field(default=None, primary_key=True)
     day_of_week: str = Field(nullable=False)
+    date_of_week: str = Field(nullable=False)
     start_time: time = Field(nullable=False)
     end_time: time = Field(nullable=False)
 

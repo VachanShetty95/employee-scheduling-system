@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from models.database import get_db
-from models.models import Availability, Employee, ShiftDetail
-from models.schemas import SchedulingResponse, ShiftDetailCreate, ShiftDetailResponse
+from models.models import Availability, Employee, ShiftDetail, ShiftSchedule
+from models.schemas import SchedulingResponse, ShiftDetailCreate, ShiftDetailResponse, Subscription
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 from src.schedule import shift_schedule
@@ -13,6 +13,11 @@ router = APIRouter()
 def get_shifts(session: Session = Depends(get_db)):
     shifts = session.exec(select(ShiftDetail)).all()
     return shifts
+
+# @router.get("/", response_model=list[ShiftSchedule])
+# def get_shifts_per_employee(session:Session = Depends(get_db)):
+#     shifts = session.exec
+
 
 
 @router.post("/create", response_model=ShiftDetailResponse)
@@ -46,5 +51,10 @@ def schedule_shifts(session: Session = Depends(get_db)):
     assignments = shift_schedule(
         employees=employees, shifts=shifts, availability=availability
     )
-    # assignments = employee_scheduling_with_constraints(employees=employees, shifts=shifts, skills=skills, shift_requirements=shift_requirements, availability=availability)
+    
     return SchedulingResponse(assignments=assignments)
+
+
+# @router.webhooks.post("overview")
+# def generate_overview(body: Subscription):
+#     pass

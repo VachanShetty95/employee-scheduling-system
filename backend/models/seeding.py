@@ -10,6 +10,7 @@ from models.models import (
     Role,
     ShiftDetail,
     Skill,
+    TimeOffRequest,
 )
 from models.schemas import (
     AvailabilityCreate,
@@ -20,6 +21,7 @@ from models.schemas import (
     RoleCreate,
     ShiftDetailCreate,
     SkillCreate,
+    TimeOffRequestCreate,
 )
 from sqlmodel import Session
 
@@ -64,10 +66,14 @@ def prepopulate_data(session: Session):
     # Prepopulate Roles
     roles_data = [
         RoleCreate(
-            role_name="Operator", role_description="Handles machinery and equipment"
+            role_name="Operator",
+            role_description="Handles machinery and equipment",
+            role_id=1,
         ),
         RoleCreate(
-            role_name="Supervisor", role_description="Supervises a team of operators"
+            role_name="Supervisor",
+            role_description="Supervises a team of operators",
+            role_id=2,
         ),
     ]
     roles = [Role(**role.model_dump()) for role in roles_data]
@@ -115,6 +121,7 @@ def prepopulate_data(session: Session):
             capacity=10,
             manager_id=1,
             location_id=1,
+            employee_id=1,
         ),
         ShiftDetailCreate(
             shift_week_day="Saturday",
@@ -125,6 +132,7 @@ def prepopulate_data(session: Session):
             capacity=8,
             manager_id=2,
             location_id=2,
+            employee_id=2,
         ),
     ]
     shifts = [ShiftDetail(**shift.model_dump()) for shift in shifts_data]
@@ -152,28 +160,28 @@ def prepopulate_data(session: Session):
     availability_data = [
         AvailabilityCreate(
             day_of_week="Friday",
-            date_of_week= datetime(2024,11,29),
+            date_of_week=datetime(2024, 11, 29),
             start_time=time(6, 0),
             end_time=time(14, 0),
             employee_id=1,  # John Doe
         ),
         AvailabilityCreate(
             day_of_week="Tuesday",
-            date_of_week= datetime(2024,12,3),
+            date_of_week=datetime(2024, 12, 3),
             start_time=time(16, 0),
             end_time=time(0, 0),
             employee_id=1,  # John Doe
         ),
         AvailabilityCreate(
             day_of_week="Saturday",
-            date_of_week= datetime(2024,11,30),
+            date_of_week=datetime(2024, 11, 30),
             start_time=time(14, 0),
             end_time=time(22, 0),
             employee_id=2,  # Jane Smith
         ),
         AvailabilityCreate(
             day_of_week="Wednesday",
-            date_of_week= datetime(2024,12,4),
+            date_of_week=datetime(2024, 12, 4),
             start_time=time(16, 0),
             end_time=time(0, 0),
             employee_id=2,  # Jane Smith
@@ -181,6 +189,27 @@ def prepopulate_data(session: Session):
     ]
     availability = [Availability(**avail.model_dump()) for avail in availability_data]
 
+    time_off_request_data = [
+        TimeOffRequestCreate(
+            employee_id=1,
+            request_date=datetime(2024, 11, 29),
+            start_date=datetime(2024, 11, 29),
+            end_date=datetime(2024, 11, 29),
+            status="Pending",
+            reason_for_absence="Null",
+        ),
+        TimeOffRequestCreate(
+            employee_id=2,
+            request_date=datetime(2024, 11, 29),
+            start_date=datetime(2024, 11, 29),
+            end_date=datetime(2024, 11, 29),
+            status="Pending",
+            reason_for_absence="Null",
+        ),
+    ]
+    time_off_request = [
+        TimeOffRequest(**tor.model_dump()) for tor in time_off_request_data
+    ]
     # Bulk insert all data
     session.add_all(locations)
     session.add_all(skills)
@@ -190,7 +219,7 @@ def prepopulate_data(session: Session):
     session.add_all(shifts)
     session.add_all(production_lines)
     session.add_all(availability)
-
+    session.add_all(time_off_request)
     # Commit the session to save data to the database
     session.commit()
     logging.info("Dummy data prepopulated successfully.")

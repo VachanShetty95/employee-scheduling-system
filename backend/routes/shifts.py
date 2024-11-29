@@ -1,7 +1,20 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from models.database import get_db
-from models.models import Availability, Employee, ShiftDetail, ShiftSchedule
-from models.schemas import SchedulingResponse, ShiftDetailCreate, ShiftDetailResponse, Subscription
+from models.models import (
+    Availability,
+    Employee,
+    ShiftDetail,
+    ShiftSchedule,
+    TimeOffRequest,
+)
+from models.schemas import (
+    SchedulingResponse,
+    ShiftDetailCreate,
+    ShiftDetailResponse,
+    TimeOffRequestCreate,
+)
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 from src.schedule import shift_schedule
@@ -14,10 +27,10 @@ def get_shifts(session: Session = Depends(get_db)):
     shifts = session.exec(select(ShiftDetail)).all()
     return shifts
 
+
 # @router.get("/", response_model=list[ShiftSchedule])
 # def get_shifts_per_employee(session:Session = Depends(get_db)):
 #     shifts = session.exec
-
 
 
 @router.post("/create", response_model=ShiftDetailResponse)
@@ -51,10 +64,36 @@ def schedule_shifts(session: Session = Depends(get_db)):
     assignments = shift_schedule(
         employees=employees, shifts=shifts, availability=availability
     )
-    
+
     return SchedulingResponse(assignments=assignments)
 
 
-# @router.webhooks.post("overview")
-# def generate_overview(body: Subscription):
-#     pass
+@router.post("/update-shifts/")
+async def update_shifts(body: TimeOffRequestCreate, session: Session = Depends(get_db)):
+    try:
+        shift_detail = session.exec(
+            select(ShiftDetail).where(ShiftDetail.employee_id == body.employee_id)
+        ).first()
+        time_off_requests = session.exec(
+            select(TimeOffRequest).where(TimeOffRequest.employee_id == body.employee_id)
+        ).first()
+
+        shift_detail.shift_date = body.request_date
+
+        if time_off_requests is None:
+            time_off_requests.request_date = body.request_date
+            time_off_requests.start_date = body.start_date
+            time_off_requests.end_date = body.end_date
+            time_off_requests.reason_for_absence = body.reason_for_absence
+            time_off_requests.status = "Pending"
+            time_off_requests.employee_id = body.employee_id
+
+        session.add(shift_detail)
+        session.add(time_off_requests)
+        session.commit()
+        session.refresh(shift_detail)
+        session.refresh(time_off_requests)
+
+        return "Data Updated"
+    except Exception as e:
+        logging.error(f"Time Off Request was not added: {e} ")

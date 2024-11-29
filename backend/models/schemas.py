@@ -46,7 +46,7 @@ class RoleBase(SQLModel):
 
 
 class RoleCreate(RoleBase):
-    pass
+    role_id: int
 
 
 class RoleResponse(RoleBase):
@@ -84,7 +84,7 @@ class ShiftDetailBase(SQLModel):
     shift_week_day: Literal[
         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
     ]
-    shift_date: datetime
+    shift_date: date
     shift_start_time: time
     shift_end_time: time
     shift_desc: Optional[str] = None
@@ -95,6 +95,7 @@ class ShiftDetailBase(SQLModel):
 class ShiftDetailCreate(ShiftDetailBase):
     manager_id: int
     location_id: int
+    employee_id: int
 
 
 class ShiftDetailResponse(ShiftDetailBase):
@@ -167,13 +168,13 @@ class TimeOffRequestBase(SQLModel):
     status: Literal["Pending", "Approved", "Denied"]
     reason_for_absence: Optional[str] = None
 
-    @field_validator("end_date")
-    @classmethod
-    def check_dates(cls, end_date, values):
-        start_date = values.get("start_date")
-        if start_date and start_date > end_date:
-            raise ValueError("start_date must be earlier than or equal to end_date")
-        return end_date
+    # @field_validator("end_date")
+    # @classmethod
+    # def check_dates(cls, end_date, values):
+    #     start_date = values.("start_date")
+    #     if start_date and start_date > end_date:
+    #         raise ValueError("start_date must be earlier than or equal to end_date")
+    #     return end_date
 
 
 class TimeOffRequestCreate(TimeOffRequestBase):
@@ -230,11 +231,3 @@ class SchedulingAssignment(SQLModel):
 
 class SchedulingResponse(SQLModel):
     assignments: List[SchedulingAssignment]
-
-
-# Webhook Response Model
-class Subscription(BaseModel):
-    id: str
-    name: str
-    reason: str
-    date: datetime

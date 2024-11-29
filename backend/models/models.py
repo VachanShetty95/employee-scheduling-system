@@ -79,6 +79,7 @@ class Employee(SQLModel, table=True):
     location: Optional[Location] = Relationship(back_populates="employees")
     time_off_requests: List["TimeOffRequest"] = Relationship(back_populates="employee")
     employee_skills: List["EmployeeSkill"] = Relationship(back_populates="employee")
+    shifts: List["ShiftDetail"] = Relationship(back_populates="employee")
     shift_schedules: List["ShiftSchedule"] = Relationship(back_populates="employee")
 
 
@@ -87,7 +88,7 @@ class ShiftDetail(SQLModel, table=True):
     __tablename__ = "shift_details"
     id: Optional[int] = Field(default=None, primary_key=True)
     shift_week_day: str = Field(nullable=False)
-    shift_date: datetime = Field(nullable=False)
+    shift_date: date = Field(nullable=False)
     shift_start_time: time = Field(nullable=False)
     shift_end_time: time = Field(nullable=False)
     shift_desc: Optional[str] = Field(default=None)
@@ -95,10 +96,12 @@ class ShiftDetail(SQLModel, table=True):
     current_employees: Optional[int] = Field(default=None)
 
     # Foreign Keys
+    employee_id: int = Field(foreign_key="employees.id")
     manager_id: int = Field(foreign_key="managers.id")
     location_id: int = Field(foreign_key="locations.id")
 
     # Relationships
+    employee: Optional["Employee"] = Relationship(back_populates="shifts")
     location: Optional[Location] = Relationship(back_populates="shifts")
     manager: Optional["Manager"] = Relationship(back_populates="shifts")
 
@@ -157,7 +160,7 @@ class Availability(SQLModel, table=True):
 class TimeOffRequest(SQLModel, table=True):
     __tablename__ = "time_off_requests"
     id: Optional[int] = Field(default=None, primary_key=True)
-    request_date: date = Field(nullable=False)
+    request_date: date = Field(nullable=True)
     start_date: date = Field(nullable=False)
     end_date: date = Field(nullable=False)
     status: str = Field(
